@@ -9,6 +9,38 @@ from django.core.files.uploadedfile import SimpleUploadedFile  # type: ignore
 
 User = get_user_model()
 
+# --- FACTORIES FOR TESTS (for use in other apps) ---
+class UserFactory:
+    counter = 0
+    @classmethod
+    def create(cls, **kwargs):
+        cls.counter += 1
+        defaults = {
+            'username': f'user{cls.counter}',
+            'password': 'Testpass123!',
+            'user_type': kwargs.get('user_type', 'entrepreneur'),
+            'phone_number': f'080{cls.counter:08d}',
+            'referral_code': f'REF{cls.counter}',
+        }
+        defaults.update(kwargs)
+        user = User.objects.create_user(**defaults)
+        return user
+
+class EntrepreneurProfileFactory:
+    counter = 0
+    @classmethod
+    def create(cls, **kwargs):
+        cls.counter += 1
+        user = kwargs.pop('user', None) or UserFactory.create(user_type='entrepreneur')
+        defaults = {
+            'user': user,
+            'business_name': f'Biz{cls.counter}',
+            'custom_url': f'biz{cls.counter}',
+            'bio': f'Bio for Biz{cls.counter}',
+        }
+        defaults.update(kwargs)
+        return EntrepreneurProfile.objects.create(**defaults)
+
 class EntrepreneurProfileAPITest(TestCase):
     def setUp(self):
         self.client = APIClient()

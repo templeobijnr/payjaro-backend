@@ -4,6 +4,7 @@ from django.urls import reverse  # type: ignore
 from .models import Product, Category
 from suppliers.models import SupplierProfile
 from django.contrib.auth import get_user_model  # type: ignore
+from suppliers.tests import SupplierProfileFactory
 
 User = get_user_model()
 
